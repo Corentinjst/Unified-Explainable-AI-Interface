@@ -31,11 +31,19 @@ venv_command
 # Data Files (large datasets)
 # ===========================
 # Raw audio files
-data/Deepfake-Audio-Detection-with-XAI/
-data/spectrograms/
+data/Deepfake-Audio-Detection-with-XAI/testing/
+data/Deepfake-Audio-Detection-with-XAI/training/
+data/Deepfake-Audio-Detection-with-XAI/validation/
 
-# Lung cancer dataset (if added later)
-data/LungCancerDetection/
+
+data/spectrograms/testing/
+data/spectrograms/training/
+data/spectrograms/validation/
+
+data/LungCancerDetection/train/
+data/LungCancerDetection/valid/
+data/LungCancerDetection/train.csv
+data/LungCancerDetection/valid.csv
 
 # ===========================
 # Source repositories
@@ -47,12 +55,13 @@ source-repo/LungCancerDetection/
 # Trained Models (large files)
 # ===========================
 # Uncomment if you want to track models in git
-models/audio/vgg16/
 models/audio/custom_cnn/
-models/audio/resnet50/
 models/audio/inceptionv3/
 models/audio/mobilenet/
-models/image/
+models/audio/resnet50/
+models/audio/vgg16/
+models/image/alexnet/
+models/image/densenet/
 
 # Keras/TensorFlow model files
 *.h5
