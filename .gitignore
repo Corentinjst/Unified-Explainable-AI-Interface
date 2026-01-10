@@ -1,0 +1,65 @@
+# ===========================
+# Virtual Environments
+# ===========================
+venv/
+env/
+xai_venv/
+ENV/
+.venv/
+.env/
+venv_command
+
+# ===========================
+# IDE / Editors
+# ===========================
+.idea/
+.vscode/
+.cursor/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.spyderproject
+.spyproject
+
+
+# ===========================
+# Data Files (large datasets)
+# ===========================
+# Raw audio files
+data/Deepfake-Audio-Detection-with-XAI/
+data/spectrograms/
+
+# Lung cancer dataset (if added later)
+data/LungCancerDetection/
+
+# ===========================
+# Source repositories
+# ===========================
+source-repo/Deepfake-Audio-Detection-with-XAI/
+source-repo/LungCancerDetection/
+
+# ===========================
+# Trained Models (large files)
+# ===========================
+# Uncomment if you want to track models in git
+models/audio/vgg16/
+models/audio/custom_cnn/
+models/audio/resnet50/
+models/audio/inceptionv3/
+models/audio/mobilenet/
+models/image/
+
+# Keras/TensorFlow model files
+*.h5
+*.hdf5
+*.pb
+*.ckpt
+*.ckpt.*
+checkpoint
+*.index
+*.data-*
