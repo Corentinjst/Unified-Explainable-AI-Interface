@@ -3,7 +3,7 @@
 
 # Core ML Framework
 tensorflow==2.18.*
-tensorflow-metal
+tensorflow-metal # Not for Windows users
 
 # TensorFlow Hub for pretrained models (InceptionV3)
 tensorflow-hub>=0.12.0

@@ -44,6 +44,8 @@ data/LungCancerDetection/train/
 data/LungCancerDetection/valid/
 data/LungCancerDetection/train.csv
 data/LungCancerDetection/valid.csv
+data/LungCancerDetection/processed/
+data/LungCancerDetection/synthetic/
 
 # ===========================
 # Source repositories
