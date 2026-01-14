@@ -8,6 +8,8 @@ ENV/
 .venv/
 .env/
 venv_command
+models/audio/
+models/image/
 
 # ===========================
 # IDE / Editors
