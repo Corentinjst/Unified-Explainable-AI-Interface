@@ -1,0 +1,27 @@
+# FastAPI Backend Dependencies
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6  # For file uploads
+
+# CORS
+fastapi-cors==0.0.6
+
+# Image Processing (for mock XAI visualizations)
+Pillow==10.2.0
+opencv-python==4.9.0.80
+numpy==1.26.3
+
+# Async support
+aiofiles==23.2.1
+
+# Pydantic for data validation
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Future: Real model integration dependencies
+# tensorflow==2.18.*
+# librosa>=0.9.0
+# lime>=0.2.0.1
+# shap>=0.41.0
