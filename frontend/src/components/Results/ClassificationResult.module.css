@@ -1,0 +1,94 @@
+.resultContainer {
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.resultContainer h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.predictionBox {
+  background-color: #f0f7ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.classLabel {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+.className {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #4a90e2;
+  text-transform: capitalize;
+}
+
+.confidenceBar {
+  margin-top: 1rem;
+}
+
+.confidenceLabel {
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.barBackground {
+  height: 24px;
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2, #357abd);
+  transition: width 0.5s ease;
+}
+
+.probabilities h4 {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.probRow {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.probClass {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #333;
+}
+
+.probBar {
+  height: 20px;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.probFill {
+  height: 100%;
+  background-color: #9ca3af;
+  transition: width 0.5s ease;
+}
+
+.probValue {
+  text-align: right;
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+}
