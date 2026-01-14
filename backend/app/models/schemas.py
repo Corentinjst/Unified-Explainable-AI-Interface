@@ -17,6 +17,8 @@ class UploadResponse(BaseModel):
 
 # Classify endpoint models
 class ClassifyRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     file_id: str
     model_name: str
 
@@ -31,6 +33,8 @@ class PredictionResult(BaseModel):
 
 
 class ClassifyResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     prediction: PredictionResult
     model_name: str
     file_type: str
@@ -40,6 +44,8 @@ class ClassifyResponse(BaseModel):
 
 # XAI endpoint models
 class XAIRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     file_id: str
     model_name: str
     xai_method: str  # 'LIME', 'SHAP', or 'Grad-CAM'
@@ -54,6 +60,8 @@ class XAIResponse(BaseModel):
 
 # Compare endpoint models
 class CompareRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     file_id: str
     model_name: str
     xai_methods: List[str]

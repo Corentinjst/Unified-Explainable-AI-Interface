@@ -12,16 +12,7 @@ AUDIO_MODELS = {
         "input_format": "wav",
         "classes": ["fake", "real"],
         "accuracy": 0.8392,
-        "path": "models/audio/vgg16/vgg16_model.keras"
-    },
-    "MobileNet": {
-        "name": "MobileNet",
-        "type": "audio",
-        "description": "MobileNet for efficient deepfake detection",
-        "input_format": "wav",
-        "classes": ["fake", "real"],
-        "accuracy": 0.7822,
-        "path": "models/audio/mobilenet/mobilenet_model.keras"
+        "path": "audio/vgg16_model.keras"
     },
     "ResNet50": {
         "name": "ResNet50",
@@ -30,16 +21,7 @@ AUDIO_MODELS = {
         "input_format": "wav",
         "classes": ["fake", "real"],
         "accuracy": 0.5239,
-        "path": "models/audio/resnet50/resnet50_model.keras"
-    },
-    "InceptionV3": {
-        "name": "InceptionV3",
-        "type": "audio",
-        "description": "InceptionV3 multi-scale feature detection",
-        "input_format": "wav",
-        "classes": ["fake", "real"],
-        "accuracy": 0.5533,
-        "path": "models/audio/inceptionv3/inceptionv3_model.keras"
+        "path": "audio/resnet50_model.keras"
     },
     "Custom_CNN": {
         "name": "Custom CNN",
@@ -48,7 +30,7 @@ AUDIO_MODELS = {
         "input_format": "wav",
         "classes": ["fake", "real"],
         "accuracy": 0.5037,
-        "path": "models/audio/custom_cnn/custom_cnn_model.keras"
+        "path": "audio/custom_cnn_model.keras"
     }
 }
 
@@ -59,17 +41,8 @@ IMAGE_MODELS = {
         "description": "VGG16 for lung cancer detection in chest X-rays",
         "input_format": "image",
         "classes": ["benign", "malignant"],
-        "accuracy": 0.85,  # Mock accuracy
-        "path": "models/image/vgg16_without_vae/vgg16_model.keras"
-    },
-    "VGG16_VAE": {
-        "name": "VGG16 + VAE",
-        "type": "image",
-        "description": "VGG16 with VAE-augmented training data",
-        "input_format": "image",
-        "classes": ["benign", "malignant"],
-        "accuracy": 0.87,  # Mock accuracy
-        "path": "models/image/vgg16_with_vae/vgg16_model.keras"
+        "accuracy": 0.85,
+        "path": "image/vgg16_without_vae_model.keras"
     },
     "DenseNet121": {
         "name": "DenseNet121",
@@ -77,17 +50,8 @@ IMAGE_MODELS = {
         "description": "DenseNet121 for chest X-ray classification",
         "input_format": "image",
         "classes": ["benign", "malignant"],
-        "accuracy": 0.88,  # Mock accuracy
-        "path": "models/image/densenet_without_vae/densenet_model.keras"
-    },
-    "DenseNet121_VAE": {
-        "name": "DenseNet121 + VAE",
-        "type": "image",
-        "description": "DenseNet121 with VAE-augmented data",
-        "input_format": "image",
-        "classes": ["benign", "malignant"],
-        "accuracy": 0.90,  # Mock accuracy
-        "path": "models/image/densenet_with_vae/densenet_model.keras"
+        "accuracy": 0.88,
+        "path": "image/densenet_whithout_vae_model.keras"
     }
 }
 

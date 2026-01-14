@@ -1,9 +1,9 @@
 """
-XAI endpoint for generating explanations and comparisons (mock implementation).
+XAI endpoint for generating explanations and comparisons.
 """
 
 import time
-import asyncio
+import logging
 from fastapi import APIRouter, HTTPException
 from ..models.schemas import (
     XAIRequest,
@@ -13,9 +13,14 @@ from ..models.schemas import (
     ComparisonResult
 )
 from ..utils.file_handler import get_file_path
-from ..utils.mock_generator import generate_mock_xai_visualization, image_to_base64
+from ..services.xai.xai_service import XAIService
 from ..utils.compatibility import get_xai_method_by_name, XAI_METHODS
 import os
+
+logger = logging.getLogger(__name__)
+
+# Initialize XAI service
+xai_service = XAIService()
 
 
 router = APIRouter(prefix="/api/xai", tags=["xai"])
@@ -45,19 +50,28 @@ async def explain_prediction(request: XAIRequest):
             detail=f"XAI method '{request.xai_method}' not found. Available: {list(XAI_METHODS.keys())}"
         )
 
-    # For audio files, we would convert to spectrogram first
-    # For now, assume we're working with images or spectrograms
-    # Generate mock XAI visualization
+    # Determine file type
+    ext = os.path.splitext(file_path)[1].lower()
+    file_type = "audio" if ext == ".wav" else "image"
+
+    # Generate real XAI explanation
     try:
-        visualization, metadata = generate_mock_xai_visualization(
+        logger.info(f"Generating {request.xai_method} explanation for {file_type}")
+        visualization, metadata = xai_service.explain_prediction(
             file_path,
+            file_type,
+            request.model_name,
             request.xai_method
         )
+        logger.info(f"{request.xai_method} explanation generated successfully")
+    except ValueError as e:
+        # Validation error (invalid model, method, etc.)
+        logger.error(f"Validation error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error generating XAI visualization: {str(e)}"
-        )
+        # XAI generation error
+        logger.error(f"XAI error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating XAI visualization: {str(e)}")
 
     # Calculate processing time
     processing_time = (time.time() - start_time) * 1000  # Convert to ms
@@ -95,12 +109,19 @@ async def compare_xai_methods(request: CompareRequest):
                 detail=f"XAI method '{method_name}' not found"
             )
 
+    # Determine file type
+    ext = os.path.splitext(file_path)[1].lower()
+    file_type = "audio" if ext == ".wav" else "image"
+
     # Generate visualizations for all methods
     comparisons = []
     for method_name in request.xai_methods:
         try:
-            visualization, metadata = generate_mock_xai_visualization(
+            logger.info(f"Generating {method_name} explanation for comparison")
+            visualization, metadata = xai_service.explain_prediction(
                 file_path,
+                file_type,
+                request.model_name,
                 method_name
             )
             comparisons.append(
@@ -110,7 +131,14 @@ async def compare_xai_methods(request: CompareRequest):
                     metadata=metadata
                 )
             )
+            logger.info(f"{method_name} explanation generated successfully")
+        except ValueError as e:
+            # Validation error
+            logger.error(f"Validation error for {method_name}: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
+            # XAI generation error
+            logger.error(f"Error generating {method_name}: {str(e)}")
             raise HTTPException(
                 status_code=500,
                 detail=f"Error generating {method_name} visualization: {str(e)}"

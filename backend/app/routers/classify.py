@@ -1,17 +1,23 @@
 """
-Classify endpoint for running model inference (mock implementation).
+Classify endpoint for running model inference.
 """
 
 import time
+import logging
 from fastapi import APIRouter, HTTPException
 from ..models.schemas import ClassifyRequest, ClassifyResponse, PredictionResult
 from ..utils.file_handler import get_file_path
-from ..utils.mock_generator import generate_mock_classification
+from ..services.inference_service import InferenceService
 from ..utils.compatibility import (
     get_model_by_name,
     get_compatible_xai_methods
 )
 import os
+
+logger = logging.getLogger(__name__)
+
+# Initialize inference service
+inference_service = InferenceService()
 
 
 router = APIRouter(prefix="/api", tags=["classify"])
@@ -50,8 +56,22 @@ async def classify_file(request: ClassifyRequest):
             detail=f"Model '{request.model_name}' not found or incompatible with {file_type}"
         )
 
-    # Generate mock classification
-    prediction = generate_mock_classification(file_type, request.model_name)
+    # Run real classification
+    try:
+        logger.info(f"Running {file_type} classification with model {request.model_name}")
+        if file_type == "audio":
+            prediction = inference_service.classify_audio(file_path, request.model_name)
+        else:
+            prediction = inference_service.classify_image(file_path, request.model_name)
+        logger.info(f"Classification successful: {prediction['class']} (confidence: {prediction['confidence']:.2%})")
+    except ValueError as e:
+        # Model not loaded or invalid
+        logger.error(f"Model error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Inference error
+        logger.error(f"Inference error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Inference error: {str(e)}")
 
     # Get compatible XAI methods
     compatible_xai = get_compatible_xai_methods(file_type)
