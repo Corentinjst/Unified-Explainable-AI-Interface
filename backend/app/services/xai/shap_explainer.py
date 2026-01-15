@@ -69,7 +69,7 @@ class SHAPExplainer(BaseExplainer):
                 sigma=1,
                 start_label=0
             )
-            num_superpixels = segments.max() + 1
+            num_superpixels = int(segments.max() + 1)
             logger.debug(f"Created {num_superpixels} superpixels")
 
             # Step 2: Create mask function
@@ -121,11 +121,20 @@ class SHAPExplainer(BaseExplainer):
             logger.debug("SHAP values computed")
 
             # Handle SHAP output format
+            # For binary classification with single sigmoid output, shap_values
+            # is either a list with one array or a single array
             if isinstance(shap_values, list):
-                # List of arrays, one per output class
-                superpixel_shap = shap_values[predicted_class][0]  # (num_superpixels,)
+                # List format - take the first (and only) element
+                superpixel_shap = shap_values[0][0]  # (num_superpixels,)
             else:
+                # Single array format
                 superpixel_shap = shap_values[0]  # (num_superpixels,)
+
+            # For binary sigmoid output:
+            # - SHAP values represent contribution to P(class=1)
+            # - If predicted_class is 0, negate to show contribution to P(class=0)
+            if predicted_class == 0:
+                superpixel_shap = -superpixel_shap
 
             logger.debug(f"Superpixel SHAP values: {superpixel_shap.shape}, "
                         f"range: [{superpixel_shap.min():.4f}, {superpixel_shap.max():.4f}]")

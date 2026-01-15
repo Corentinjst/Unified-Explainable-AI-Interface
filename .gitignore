@@ -8,6 +8,7 @@ ENV/
 .venv/
 .env/
 venv_command
+models/
 
 # ===========================
 # IDE / Editors
