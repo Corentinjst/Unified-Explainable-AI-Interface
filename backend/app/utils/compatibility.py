@@ -1,9 +1,3 @@
-"""
-Compatibility matrix for models and XAI methods.
-Defines which models work with which file types and which XAI methods are compatible.
-"""
-
-# Model definitions
 AUDIO_MODELS = {
     "VGG16": {
         "name": "VGG16",
@@ -98,15 +92,6 @@ MIME_TYPES = {
 
 
 def get_compatible_models(file_type: str) -> list:
-    """
-    Get list of models compatible with the given file type.
-
-    Args:
-        file_type: Either 'audio' or 'image'
-
-    Returns:
-        List of model dictionaries compatible with the file type
-    """
     if file_type == "audio":
         return list(AUDIO_MODELS.values())
     elif file_type == "image":
@@ -114,87 +99,29 @@ def get_compatible_models(file_type: str) -> list:
     else:
         return []
 
-
 def get_compatible_xai_methods(file_type: str) -> list:
-    """
-    Get list of XAI methods compatible with the given file type.
-
-    Args:
-        file_type: Either 'audio' or 'image'
-
-    Returns:
-        List of XAI method dictionaries compatible with the file type
-    """
     compatible = []
     for method in XAI_METHODS.values():
         if file_type in method["compatible_with"]:
             compatible.append(method)
     return compatible
 
-
 def get_model_by_name(model_name: str, file_type: str):
-    """
-    Get model details by name and file type.
-
-    Args:
-        model_name: Name of the model
-        file_type: Either 'audio' or 'image'
-
-    Returns:
-        Model dictionary or None if not found
-    """
     models = AUDIO_MODELS if file_type == "audio" else IMAGE_MODELS
-
-    # Try direct lookup
     if model_name in models:
         return models[model_name]
-
-    # Try lookup by display name
     for key, model in models.items():
         if model["name"] == model_name:
             return model
-
     return None
 
-
 def get_xai_method_by_name(method_name: str):
-    """
-    Get XAI method details by name.
-
-    Args:
-        method_name: Name of the XAI method
-
-    Returns:
-        XAI method dictionary or None if not found
-    """
     return XAI_METHODS.get(method_name)
 
-
 def validate_file_extension(filename: str, file_type: str) -> bool:
-    """
-    Validate file extension against allowed extensions for file type.
-
-    Args:
-        filename: Name of the file
-        file_type: Either 'audio' or 'image'
-
-    Returns:
-        True if extension is valid, False otherwise
-    """
     import os
     ext = os.path.splitext(filename)[1].lower()
     return ext in ALLOWED_EXTENSIONS.get(file_type, [])
 
-
 def validate_mime_type(content_type: str, file_type: str) -> bool:
-    """
-    Validate MIME type against allowed types for file type.
-
-    Args:
-        content_type: MIME type of the file
-        file_type: Either 'audio' or 'image'
-
-    Returns:
-        True if MIME type is valid, False otherwise
-    """
     return content_type in MIME_TYPES.get(file_type, [])

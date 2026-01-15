@@ -15,7 +15,7 @@ const XAIVisualization = () => {
   }
 
   const { xai_method, visualization, metadata, processing_time_ms } = state.xaiResult;
-  const originalImageUrl = getFileURL(state.fileId);
+  const originalImageUrl = getFileURL(state.fileId, state.fileType);
 
   return (
     <div className={styles.visualizationContainer}>

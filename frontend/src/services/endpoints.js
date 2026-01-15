@@ -92,8 +92,14 @@ export const getXAIMethods = async () => {
 /**
  * Get file preview URL
  * @param {string} fileId - The unique file identifier
- * @returns {string} URL to access the file
+ * @param {string} fileType - Optional file type ('audio' or 'image')
+ * @returns {string} URL to access the file (spectrogram for audio)
  */
-export const getFileURL = (fileId) => {
-  return `http://localhost:8000/api/files/${fileId}`;
+export const getFileURL = (fileId, fileType = null) => {
+  const baseUrl = `http://localhost:8000/api/files/${fileId}`;
+  // For audio files, request spectrogram format
+  if (fileType === 'audio') {
+    return `${baseUrl}?format=spectrogram`;
+  }
+  return baseUrl;
 };
