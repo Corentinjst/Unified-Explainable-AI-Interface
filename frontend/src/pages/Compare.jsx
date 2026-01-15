@@ -4,8 +4,8 @@
 
 import React, { useState } from 'react';
 import { useAppContext, ActionTypes } from '../context/AppContext';
-import { compareXAIMethods } from '../services/endpoints';
-import { getFileURL } from '../services/endpoints';
+import { compareXAIMethods, getFileURL, getAudioURL } from '../services/endpoints';
+import AudioPlayer from '../components/Results/AudioPlayer';
 import styles from './Compare.module.css';
 
 const Compare = () => {
@@ -85,6 +85,7 @@ const Compare = () => {
   }
 
   const originalImageUrl = getFileURL(state.fileId, state.fileType);
+  const audioUrl = state.fileType === 'audio' ? getAudioURL(state.fileId) : null;
 
   return (
     <div className={styles.comparePage}>
@@ -186,6 +187,9 @@ const Compare = () => {
             <div className={styles.originalImageContainer}>
               <img src={originalImageUrl} alt="Original" className={styles.originalImage} />
             </div>
+            {state.fileType === 'audio' && audioUrl && (
+              <AudioPlayer audioUrl={audioUrl} fileName={state.fileName} />
+            )}
           </div>
 
           {/* Side-by-side comparisons */}

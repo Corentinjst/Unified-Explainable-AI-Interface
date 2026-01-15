@@ -103,3 +103,12 @@ export const getFileURL = (fileId, fileType = null) => {
   }
   return baseUrl;
 };
+
+/**
+ * Get raw audio file URL
+ * @param {string} fileId - The unique file identifier
+ * @returns {string} URL to access the raw audio file
+ */
+export const getAudioURL = (fileId) => {
+  return `http://localhost:8000/api/files/${fileId}`;
+};

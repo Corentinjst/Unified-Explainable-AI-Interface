@@ -151,7 +151,11 @@
 
 .fileType {
   color: #666;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.audioPlayerWrapper {
+  margin: 1.5rem 0;
 }
 
 .resetButton {

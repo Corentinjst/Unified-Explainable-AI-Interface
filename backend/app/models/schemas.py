@@ -6,16 +6,14 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
 
-# Upload endpoint models
 class UploadResponse(BaseModel):
     file_id: str
-    file_type: str  # 'audio' or 'image'
+    file_type: str  # audio or image
     filename: str
     preview_url: str
     compatible_models: List[Dict]
 
 
-# Classify endpoint models
 class ClassifyRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
@@ -42,7 +40,6 @@ class ClassifyResponse(BaseModel):
     compatible_xai_methods: List[Dict]
 
 
-# XAI endpoint models
 class XAIRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
@@ -53,12 +50,11 @@ class XAIRequest(BaseModel):
 
 class XAIResponse(BaseModel):
     xai_method: str
-    visualization: str  # Base64-encoded image
+    visualization: str  # image in base64 format
     metadata: Dict
     processing_time_ms: float
 
 
-# Compare endpoint models
 class CompareRequest(BaseModel):
     model_config = {"protected_namespaces": ()}
 
@@ -78,7 +74,6 @@ class CompareResponse(BaseModel):
     processing_time_ms: float
 
 
-# Model info models
 class ModelInfo(BaseModel):
     name: str
     type: str

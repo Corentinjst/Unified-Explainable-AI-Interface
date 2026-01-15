@@ -4,7 +4,8 @@
 
 import React from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { getFileURL } from '../../services/endpoints';
+import { getFileURL, getAudioURL } from '../../services/endpoints';
+import AudioPlayer from './AudioPlayer';
 import styles from './XAIVisualization.module.css';
 
 const XAIVisualization = () => {
@@ -16,6 +17,7 @@ const XAIVisualization = () => {
 
   const { xai_method, visualization, metadata, processing_time_ms } = state.xaiResult;
   const originalImageUrl = getFileURL(state.fileId, state.fileType);
+  const audioUrl = state.fileType === 'audio' ? getAudioURL(state.fileId) : null;
 
   return (
     <div className={styles.visualizationContainer}>
@@ -28,6 +30,9 @@ const XAIVisualization = () => {
         <div className={styles.imageBox}>
           <h3>Original {state.fileType === 'audio' ? 'Spectrogram' : 'Image'}</h3>
           <img src={originalImageUrl} alt="Original" className={styles.image} />
+          {state.fileType === 'audio' && audioUrl && (
+            <AudioPlayer audioUrl={audioUrl} fileName={state.fileName} />
+          )}
         </div>
 
         <div className={styles.imageBox}>

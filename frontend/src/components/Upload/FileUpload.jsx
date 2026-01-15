@@ -4,7 +4,8 @@
 
 import React, { useState } from 'react';
 import { useAppContext, ActionTypes } from '../../context/AppContext';
-import { uploadFile } from '../../services/endpoints';
+import { uploadFile, getAudioURL } from '../../services/endpoints';
+import AudioPlayer from '../Results/AudioPlayer';
 import styles from './FileUpload.module.css';
 
 const FileUpload = () => {
@@ -88,6 +89,8 @@ const FileUpload = () => {
 
   if (state.fileId) {
     // File already uploaded, show preview
+    const audioUrl = state.fileType === 'audio' ? getAudioURL(state.fileId) : null;
+
     return (
       <div className={styles.uploadedContainer}>
         <div className={styles.uploadSuccess}>
@@ -97,6 +100,11 @@ const FileUpload = () => {
           <p className={styles.fileType}>
             Type: <strong>{state.fileType === 'audio' ? 'Audio' : 'Image'}</strong>
           </p>
+          {state.fileType === 'audio' && audioUrl && (
+            <div className={styles.audioPlayerWrapper}>
+              <AudioPlayer audioUrl={audioUrl} fileName={state.fileName} />
+            </div>
+          )}
           <button onClick={handleReset} className={styles.resetButton}>
             Upload Different File
           </button>

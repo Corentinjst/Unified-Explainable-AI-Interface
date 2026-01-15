@@ -1,89 +1,72 @@
 # Unified Explainable AI Interface
 
-A unified web application for **multi-modal AI classification** with **explainable AI (XAI) techniques**. This project integrates audio deepfake detection and lung cancer detection into a single platform with support for LIME, SHAP, and Grad-CAM visualizations.
+A unified web application for **multi-modal AI classification** with **explainable AI (XAI) techniques**. This project integrates deepfake audio detection and lung cancer detection into a single platform with full support for LIME, SHAP, and Grad-CAM visualizations.
+
+## Team Information
+
+**Team Members:**
+- Corentin JUSTE
+- Maxime Langelier
+- Noé Le YHUELIC
+- Vianney LE BHOURIS
+
+**TD Group:** DIA 4
+
+**Course:** Explainability AI
+
 
 ## Project Overview
 
-This project combines two separate AI systems:
-1. **Deepfake Audio Detection**: Detects real vs. fake audio using neural networks trained on mel-spectrograms
-2. **Lung Cancer Detection**: Identifies malignant tumors in chest X-rays using transfer learning
+This project successfully integrates two existing Explainable AI systems into a single interactive platform:
+
+1. **Deepfake Audio Detection**: Detects real vs. fake audio using neural networks (VGG16, MobileNet, InceptionV3, Custom CNN) trained on mel-spectrograms from the Fake-or-Real (FoR) dataset
+2. **Lung Cancer Detection**: Identifies malignant tumors in chest X-rays using transfer learning models (DenseNet121, VGG16) on the CheXpert dataset
+
 
 The unified interface allows users to:
-- Upload audio (.wav) or image files (.jpg, .png)
-- Select compatible classification models
-- Apply XAI techniques (LIME, SHAP, Grad-CAM)
-- Compare multiple XAI methods side-by-side
-- View interactive visualizations explaining model decisions
+- Upload audio (.wav) or image files
+- Select compatible classification models automatically filtered by input type
+- Apply three XAI techniques (LIME, SHAP, Grad-CAM) with real implementations
+- Compare multiple XAI methods side-by-side on the same input
+- View interactive visualizations with metadata explaining model decisions
+
 
 ## Tech Stack
 
-- **Frontend**: React + Vite, React Router, Axios, CSS Modules
-- **Backend**: FastAPI (Python), Pydantic for validation
-- **ML Framework**: TensorFlow/Keras (for future real model integration)
-- **XAI Libraries**: LIME, SHAP, OpenCV (currently using mock implementations)
+### Frontend
+- **Framework**: React 18 + Vite
+- **Styling**: Vanilla CSS
 
-## Features
+### Backend
+- **Framework**: FastAPI 
 
-### Implemented
-✅ Multi-modal file upload (audio and images) with drag-and-drop
-✅ Automatic model compatibility filtering based on file type
-✅ Mock classification with realistic results
-✅ XAI visualization generation (LIME, SHAP, Grad-CAM)
-✅ Side-by-side comparison of original input and XAI explanation
-✅ Responsive design (mobile, tablet, desktop)
-✅ RESTful API with automatic documentation
-✅ Compatibility matrix ensuring only valid XAI methods are shown
+### Machine Learning
+- **Framework**: TensorFlow 2.18 / Keras
+- **XAI Libraries**:
+  - LIME
+  - SHAP
+  - scikit-image (for Grad-CAM)
 
-### Future Enhancements
-⏳ Real model integration (load .keras files and run inference)
-⏳ Audio-to-spectrogram conversion using librosa
-⏳ Real XAI implementations (currently using mock visualizations)
-⏳ Comparison page for side-by-side XAI method analysis
-⏳ Model performance metrics and confidence intervals
 
-## Architecture
 
-```
-Unified-Explainable-AI-Interface/
-├── backend/                 # FastAPI backend
-│   ├── app/
-│   │   ├── main.py         # FastAPI app entry point
-│   │   ├── routers/        # API endpoints
-│   │   ├── utils/          # Utilities (compatibility, mock data)
-│   │   └── models/         # Pydantic schemas
-│   └── requirements.txt
-│
-├── frontend/                # React frontend
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   ├── context/        # State management
-│   │   └── services/       # API communication
-│   └── package.json
-│
-├── models/                  # Trained model weights (.keras)
-├── notebooks/               # Training notebooks
-└── data/                    # Datasets
-```
+
+## Basic Workflow (Analysis Page)
+Complete step-by-step workflow:
+1. **Upload**: Drag-and-drop or file browser
+2. **Model Selection**: Choose from compatible models
+3. **Classification**: View prediction with confidence scores
+4. **XAI Selection**: Choose explainability method
+5. **Visualization**: Side-by-side comparison of original input and explanation
+
+
 
 ## Setup Instructions
 
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- npm or yarn
-
-### Backend Setup
+### Backend
 
 1. **Navigate to backend directory**:
    ```bash
    cd backend
-   ```
-
-2. **Create virtual environment** (recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**:
@@ -91,16 +74,19 @@ Unified-Explainable-AI-Interface/
    pip install -r requirements.txt
    ```
 
-4. **Run the FastAPI server**:
+4. **Ensure model files exist**:
+   - Place `.keras` model files in `models/audio/` and `models/image/` directories
+   - Audio models: `vgg16_model.keras`, `mobilenet_model.keras`, etc.
+   - Image models: `densenet121_model.keras`, `vgg16_model.keras`, etc.
+
+5. **Run the FastAPI server**:
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
    The API will be available at `http://localhost:8000`
-   - Interactive API docs: `http://localhost:8000/docs`
-   - Alternative docs: `http://localhost:8000/redoc`
 
-### Frontend Setup
+### Frontend
 
 1. **Navigate to frontend directory**:
    ```bash
@@ -119,133 +105,52 @@ Unified-Explainable-AI-Interface/
 
    The app will be available at `http://localhost:5173`
 
-## How to Use
 
-### Step 1: Upload File
-1. Open the application at `http://localhost:5173`
-2. Drag and drop or browse to upload:
-   - Audio file (.wav) for deepfake detection
-   - Image file (.jpg, .png) for lung cancer detection
-
-### Step 2: Select Model
-1. After upload, compatible models will be displayed
-2. Click on a model card to run classification
-3. View the prediction result with confidence score
-
-### Step 3: Choose XAI Method
-1. Select an explainability method:
-   - **LIME**: Local interpretable explanations with superpixel highlighting
-   - **SHAP**: Shapley value-based pixel attributions
-   - **Grad-CAM**: Gradient-based attention heatmaps
-2. The visualization will show which regions influenced the prediction
-
-### Step 4: View Results
-1. Compare original input with XAI explanation side-by-side
-2. Review metadata (processing time, explanation quality)
-3. Download visualizations if needed
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/upload` | Upload and validate file |
-| POST | `/api/classify` | Run classification |
-| POST | `/api/xai/explain` | Generate XAI visualization |
-| POST | `/api/xai/compare` | Compare multiple XAI methods |
-| GET | `/api/models` | Get available models |
-| GET | `/api/xai/methods` | Get XAI methods |
-| GET | `/api/files/{file_id}` | Retrieve uploaded file |
-| GET | `/health` | Health check |
 
 ## Models
 
 ### Audio Models (Deepfake Detection)
-- **VGG16**: 83.92% accuracy - Best overall performance
-- **MobileNet**: 78.22% accuracy - Most efficient
-- **InceptionV3**: 55.33% accuracy
-- **Custom CNN**: 50.37% accuracy
+
+Trained on the Fake-or-Real (FoR) dataset using mel-spectrograms:
+
+| Model | Architecture | Accuracy | Parameters |
+|-------|-------------|----------|------------|
+| VGG16 | Transfer Learning | 83.92% | ~14.7M | 
+| MobileNet | Transfer Learning | 78.22% | ~3.2M |
+| InceptionV3 | Transfer Learning | 55.33% | ~21.8M | 
+| Custom CNN | From Scratch | 50.37% | ~500K | 
+
+**Input Format**: Audio → Mel-spectrogram (224×224, 128 mel-bands)
+**Classes**: `["fake", "real"]`
 
 ### Image Models (Lung Cancer Detection)
-- **DenseNet121 + VAE**: 90% accuracy (mock)
-- **DenseNet121**: 88% accuracy (mock)
-- **VGG16 + VAE**: 87% accuracy (mock)
-- **VGG16**: 85% accuracy (mock)
 
-## XAI Methods
+Trained on the CheXpert dataset:
 
-| Method | Full Name | Compatible With | Description |
-|--------|-----------|-----------------|-------------|
-| LIME | Local Interpretable Model-agnostic Explanations | Audio, Image | Superpixel-based local explanations |
-| SHAP | SHapley Additive exPlanations | Audio, Image | Game theory-based feature attributions |
-| Grad-CAM | Gradient-weighted Class Activation Mapping | Audio, Image | CNN gradient-based attention maps |
+| Model | Architecture | Accuracy | Parameters | 
+|-------|-------------|----------|------------|
+| DenseNet121 | Transfer Learning | 88% | ~7M | 
+| VGG16 | Transfer Learning | 85% | ~14.7M | 
 
-## Development
+**Input Format**: Chest X-ray images (224×224)
+**Classes**: `["benign", "malignant"]`
 
-### Project Structure
-- **Backend**: Modular FastAPI structure with routers, services, and utilities
-- **Frontend**: Component-based React architecture with CSS Modules
-- **State Management**: React Context API for global state
-- **API Communication**: Axios with centralized endpoint functions
 
-### Code Quality
-- Python: Type hints, Pydantic validation, async/await
-- JavaScript: ES6+, functional components, hooks
-- CSS: Modular styles, responsive design, mobile-first approach
-
-### Testing
-Currently, the application uses mock data for demonstration purposes. To test:
-
-1. Start both backend and frontend servers
-2. Upload a test file (audio or image)
-3. Go through the full workflow: upload → classify → XAI
-4. Verify visualizations display correctly
-5. Check browser console for errors
-
-## Migration to Real Models
-
-To integrate real trained models:
-
-1. **Update backend dependencies** in `requirements.txt`:
-   ```
-   tensorflow==2.18.*
-   librosa>=0.9.0
-   lime>=0.2.0.1
-   shap>=0.41.0
-   ```
-
-2. **Implement model loading** in `backend/app/services/model_loader.py`
-3. **Add audio preprocessing** in `backend/app/services/preprocessor.py`
-4. **Replace mock generators** with real XAI implementations
-5. **Update endpoints** to use real predictions
 
 ## Generative AI Usage Statement
 
-This project was developed with assistance from **Claude Code (Anthropic)** for the following purposes:
+This project was developed with assistance from **Anthropic's Claude Code** for the following purposes:
 
-- **Code Generation**: FastAPI backend structure, React components, and API integration
-- **Architecture Design**: System design, component hierarchy, and state management
-- **Documentation**: README, code comments, and API documentation
-- **Debugging**: Error handling and code optimization
+- All Frontend Work (except minor CSS modifications)
+- Figuring out the file structure of the project (namely the split into multiple XAI services and BaseExplainer class)
+- Fixing the vanilla GradCAM explainer implementation that had tensorflow-related issues.
+- Thourougly evaluate the code that was human-written to ensure good code quality.
 
-All code was reviewed and tested before inclusion in the final project.
 
-## Contributors
+All AI-generated code was reviewed, tested, and modified as needed to ensure correctness and alignment with project requirements. The use of Generative AI was primarily for accelerating development and ensuring code quality, not for bypassing learning objectives.
 
-- Maxime Langelier
-- TD Group: [Your TD Group Here]
 
-## License
 
-This project is for educational purposes as part of a university assignment.
-
-## Acknowledgments
-
-- Original deepfake audio detection implementation
-- Original lung cancer detection implementation
-- TensorFlow and Keras teams
-- FastAPI and React communities
-- XAI library developers (LIME, SHAP)
-
----
-
-**Built with ❤️ using React + FastAPI**
+**Original Sources:**
+- [Deepfake Audio Detector with XAI](https://github.com/Guri10/Deepfake-Audio-Detection-with-XAI)
+- [Lung Cancer Detection](https://github.com/schaudhuri16/LungCancerDetection)
