@@ -35,16 +35,6 @@ class GradCAMExplainer(BaseExplainer):
         """
         Generate Grad-CAM heatmap.
 
-        Process:
-        1. Find last convolutional layer automatically
-        2. Create gradient model (conv outputs + predictions)
-        3. Compute gradients of predicted class w.r.t. conv outputs
-        4. Weight conv activations by gradients (global average pooling)
-        5. Create heatmap and apply ReLU
-        6. Resize to input size and apply colormap
-        7. Overlay on original image
-        8. Return as base64 + metadata
-
         Args:
             input_data: Image array (224, 224, 3) with values [0, 255]
             model: TensorFlow model
@@ -56,80 +46,79 @@ class GradCAMExplainer(BaseExplainer):
         try:
             logger.info("Generating Grad-CAM explanation...")
 
-            # Find last convolutional layer
-            last_conv_layer_name = self._find_last_conv_layer(model)
-            logger.debug(f"Using convolutional layer: {last_conv_layer_name}")
-
-            # Create gradient model
-            # This outputs both the conv layer activations and the final prediction
-            last_conv_layer = model.get_layer(last_conv_layer_name)
-            grad_model = tf.keras.Model(
-                inputs=model.input,
-                outputs=[last_conv_layer.output, model.output]
-            )
-            logger.debug("Gradient model created")
-
             # Prepare input
             input_batch = np.expand_dims(input_data, axis=0)  # (1, 224, 224, 3)
             input_tensor = tf.convert_to_tensor(input_batch, dtype=tf.float32)
 
-            # Compute gradients using GradientTape
+            # Find the base CNN model and last conv layer
+            base_model, last_conv_layer_name = self._find_base_model_and_conv(model)
+            logger.debug(f"Using base model: {base_model.name}, conv layer: {last_conv_layer_name}")
+
+            # Create gradient model from the base model
+            last_conv_layer = base_model.get_layer(last_conv_layer_name)
+            grad_model = tf.keras.Model(
+                inputs=base_model.input,
+                outputs=[last_conv_layer.output, base_model.output]
+            )
+
+            # Compute gradients
             logger.debug("Computing gradients...")
             with tf.GradientTape() as tape:
-                # Forward pass
-                conv_outputs, predictions = grad_model(input_tensor)
+                # Forward pass through base model
+                conv_outputs, base_output = grad_model(input_tensor)
 
-                # For binary classification, get the prediction for our class
-                # predictions shape: (1, 1) - sigmoid output
+                # Forward pass through the rest of the model to get final prediction
+                # Find layers after base model and apply them
+                x = base_output
+                found_base = False
+                for layer in model.layers:
+                    if layer.name == base_model.name:
+                        found_base = True
+                        continue
+                    if found_base:
+                        x = layer(x)
+
+                predictions = x
+
+                # For binary classification, get the prediction
                 loss = predictions[:, 0]
 
             # Get gradients of the loss w.r.t. conv outputs
             grads = tape.gradient(loss, conv_outputs)
+
+            if grads is None:
+                raise ValueError("Could not compute gradients.")
+
             logger.debug(f"Gradients computed: shape={grads.shape}")
 
-            # Global average pooling of gradients (weights)
-            # This gives importance of each feature map
+            # Global average pooling of gradients
             pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-            logger.debug(f"Pooled gradients: shape={pooled_grads.shape}")
 
             # Weight conv outputs by gradients
-            conv_outputs = conv_outputs[0].numpy()  # Remove batch dimension
-            pooled_grads = pooled_grads.numpy()
+            conv_outputs_np = conv_outputs[0].numpy()
+            pooled_grads_np = pooled_grads.numpy()
 
-            # Multiply each feature map by its importance weight
-            for i in range(len(pooled_grads)):
-                conv_outputs[:, :, i] *= pooled_grads[i]
+            for i in range(len(pooled_grads_np)):
+                conv_outputs_np[:, :, i] *= pooled_grads_np[i]
 
-            # Create heatmap (average across all feature maps)
-            heatmap = np.mean(conv_outputs, axis=-1)
-            logger.debug(f"Heatmap created: shape={heatmap.shape}, "
-                        f"range=[{heatmap.min():.4f}, {heatmap.max():.4f}]")
-
-            # Apply ReLU (only positive contributions)
+            # Create heatmap
+            heatmap = np.mean(conv_outputs_np, axis=-1)
             heatmap = np.maximum(heatmap, 0)
 
-            # Normalize to [0, 1]
             if heatmap.max() > 0:
                 heatmap /= heatmap.max()
-            logger.debug("Heatmap normalized")
 
-            # Resize heatmap to input size
+            # Resize and colorize
             heatmap_resized = cv2.resize(heatmap, (224, 224))
-
-            # Apply colormap (COLORMAP_JET: red/yellow for high activation)
             heatmap_colored = cv2.applyColorMap(
                 (heatmap_resized * 255).astype(np.uint8),
                 cv2.COLORMAP_JET
             )
-            # Convert BGR to RGB
             heatmap_colored = cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)
-            logger.debug("Applied JET colormap")
 
-            # Overlay on original image (50% opacity each)
+            # Blend with original
             blended = (input_data * 0.5 + heatmap_colored * 0.5).astype(np.uint8)
-            logger.debug("Blended heatmap with original image")
 
-            # Metadata
             metadata = {
                 "target_layer": last_conv_layer_name,
                 "max_activation": float(heatmap_resized.max()),
@@ -137,11 +126,9 @@ class GradCAMExplainer(BaseExplainer):
                 "activation_coverage": float((heatmap_resized > 0.3).sum() / heatmap_resized.size)
             }
 
-            # Convert to base64
             visualization_base64 = self.array_to_base64(blended)
 
-            logger.info(f"Grad-CAM explanation complete: layer={last_conv_layer_name}, "
-                       f"max_activation={metadata['max_activation']:.4f}")
+            logger.info(f"Grad-CAM explanation complete: layer={last_conv_layer_name}")
 
             return visualization_base64, metadata
 
@@ -149,31 +136,40 @@ class GradCAMExplainer(BaseExplainer):
             logger.error(f"Error generating Grad-CAM explanation: {str(e)}")
             raise Exception(f"Grad-CAM explanation failed: {str(e)}")
 
-    @staticmethod
-    def _find_last_conv_layer(model) -> str:
+    def _find_base_model_and_conv(self, model) -> Tuple[tf.keras.Model, str]:
         """
-        Find the last convolutional layer in the model.
-
-        Searches backwards through the model layers to find the last
-        layer with "conv" in its name.
+        Find the base CNN model (e.g., VGG16) and its last conv layer.
 
         Args:
-            model: TensorFlow model
+            model: TensorFlow model (may contain nested models)
 
         Returns:
-            Name of the last convolutional layer
-
-        Raises:
-            ValueError: If no convolutional layer is found
+            Tuple of (base_model, last_conv_layer_name)
         """
-        # Search backwards through layers
-        for layer in reversed(model.layers):
-            # Check if layer name contains "conv" (case insensitive)
-            if 'conv' in layer.name.lower():
-                logger.debug(f"Found last conv layer: {layer.name}")
-                return layer.name
+        # First, check if this model itself has Conv2D layers at the top level
+        top_level_conv = None
+        for layer in model.layers:
+            if isinstance(layer, tf.keras.layers.Conv2D):
+                top_level_conv = layer.name
 
-        # If no conv layer found, raise error
+        if top_level_conv:
+            # Model has Conv2D at top level, use it directly
+            logger.debug(f"Found top-level Conv2D: {top_level_conv}")
+            return model, top_level_conv
+
+        # Look for nested models that contain Conv2D layers
+        for layer in model.layers:
+            if hasattr(layer, 'layers'):
+                # This is a nested model (like VGG16, ResNet, etc.)
+                last_conv = None
+                for sub_layer in layer.layers:
+                    if isinstance(sub_layer, tf.keras.layers.Conv2D):
+                        last_conv = sub_layer.name
+
+                if last_conv:
+                    logger.debug(f"Found nested model '{layer.name}' with conv layer: {last_conv}")
+                    return layer, last_conv
+
         raise ValueError(
             "No convolutional layer found in model. "
             "Grad-CAM requires a CNN architecture with convolutional layers."
