@@ -3,11 +3,13 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import styles from './ClassificationResult.module.css';
 
 const ClassificationResult = () => {
   const { state } = useAppContext();
+  const navigate = useNavigate();
 
   if (!state.classificationResult) {
     return null;
@@ -15,6 +17,10 @@ const ClassificationResult = () => {
 
   const { class: predictedClass, confidence, probabilities } = state.classificationResult;
   const confidencePercent = (confidence * 100).toFixed(2);
+
+  const handleCompareClick = () => {
+    navigate('/compare');
+  };
 
   return (
     <div className={styles.resultContainer}>
@@ -51,6 +57,12 @@ const ClassificationResult = () => {
             <span className={styles.probValue}>{(prob * 100).toFixed(2)}%</span>
           </div>
         ))}
+      </div>
+
+      <div className={styles.compareButtonContainer}>
+        <button className={styles.compareButton} onClick={handleCompareClick}>
+          Compare XAI Methods
+        </button>
       </div>
     </div>
   );

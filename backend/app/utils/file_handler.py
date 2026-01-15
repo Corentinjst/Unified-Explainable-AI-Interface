@@ -1,5 +1,6 @@
 import os
 import uuid
+import time
 import aiofiles
 from pathlib import Path
 from fastapi import UploadFile, HTTPException
@@ -51,7 +52,6 @@ def generate_file_id() -> str:
     return str(uuid.uuid4())
 
 def cleanup_old_files(max_age_hours: int = 24):
-    import time
     current_time = time.time()
     max_age_seconds = max_age_hours * 3600
     for file_path in UPLOAD_DIR.iterdir():

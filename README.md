@@ -162,7 +162,6 @@ Unified-Explainable-AI-Interface/
 ### Audio Models (Deepfake Detection)
 - **VGG16**: 83.92% accuracy - Best overall performance
 - **MobileNet**: 78.22% accuracy - Most efficient
-- **ResNet50**: 52.39% accuracy
 - **InceptionV3**: 55.33% accuracy
 - **Custom CNN**: 50.37% accuracy
 

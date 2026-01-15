@@ -1,3 +1,5 @@
+import os
+
 AUDIO_MODELS = {
     "VGG16": {
         "name": "VGG16",
@@ -8,14 +10,23 @@ AUDIO_MODELS = {
         "accuracy": 0.8392,
         "path": "audio/vgg16_model.keras"
     },
-    "ResNet50": {
-        "name": "ResNet50",
+    "InceptionV3": {
+        "name": "InceptionV3",
         "type": "audio",
-        "description": "ResNet50 transfer learning for audio classification",
+        "description": "InceptionV3 transfer learning for deepfake audio detection",
         "input_format": "wav",
         "classes": ["fake", "real"],
-        "accuracy": 0.5239,
-        "path": "audio/resnet50_model.keras"
+        "accuracy": 0.5533,
+        "path": "audio/inceptionv3_model.keras"
+    },
+    "MobileNet": {
+        "name": "MobileNet",
+        "type": "audio",
+        "description": "MobileNet transfer learning for deepfake audio detection",
+        "input_format": "wav",
+        "classes": ["fake", "real"],
+        "accuracy": 0.7822,
+        "path": "audio/mobilenet_model.keras"
     },
     "Custom_CNN": {
         "name": "Custom CNN",
@@ -119,7 +130,6 @@ def get_xai_method_by_name(method_name: str):
     return XAI_METHODS.get(method_name)
 
 def validate_file_extension(filename: str, file_type: str) -> bool:
-    import os
     ext = os.path.splitext(filename)[1].lower()
     return ext in ALLOWED_EXTENSIONS.get(file_type, [])
 

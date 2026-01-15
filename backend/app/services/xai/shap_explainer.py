@@ -11,7 +11,7 @@ class SHAPExplainer(BaseExplainer):
         pass
 
     def explain(self, input_data: np.ndarray, model, predicted_class: int) -> Tuple[str, Dict]:
-        n_segments = 100
+        n_segments = 50
         segments = slic(
             input_data.astype(np.float64) / 255.0,
             n_segments=n_segments,

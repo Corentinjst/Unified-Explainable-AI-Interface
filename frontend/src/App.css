@@ -45,10 +45,19 @@
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
 }
 
 .nav-link:hover {
   color: #4a90e2;
+  background-color: #f3f4f6;
+}
+
+.nav-link.active {
+  color: #8b5cf6;
+  background-color: #faf5ff;
+  font-weight: 600;
 }
 
 /* Main Content */

@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import Analysis from './pages/Analysis';
+import Compare from './pages/Compare';
 import './App.css';
 
 function App() {
@@ -19,7 +20,12 @@ function App() {
                 🔬 Unified XAI Interface
               </Link>
               <div className="nav-links">
-                <Link to="/" className="nav-link">Analysis</Link>
+                <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} end>
+                  Analysis
+                </NavLink>
+                <NavLink to="/compare" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                  Compare
+                </NavLink>
               </div>
             </div>
           </nav>
@@ -27,6 +33,7 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Analysis />} />
+              <Route path="/compare" element={<Compare />} />
               <Route path="*" element={<Analysis />} />
             </Routes>
           </main>

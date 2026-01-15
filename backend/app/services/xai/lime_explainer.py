@@ -36,16 +36,11 @@ class LIMEExplainer(BaseExplainer):
         visualization = (visualization * 255).astype(np.uint8)
 
         feature_weights = explanation.local_exp[predicted_class]
-        top_features = sorted(feature_weights, key=lambda x: abs(x[1]), reverse=True)[:5]
 
         metadata = {
             "num_features": len(feature_weights),
             "num_superpixels": len(np.unique(mask)),
-            "num_samples": self.num_samples,
-            "top_features": [
-                {"feature_id": int(feat), "weight": float(weight), "importance": "positive" if weight > 0 else "negative"}
-                for feat, weight in top_features
-            ]
+            "num_samples": self.num_samples
         }
 
         visualization_base64 = self.array_to_base64(visualization)

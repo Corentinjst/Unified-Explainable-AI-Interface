@@ -1,11 +1,17 @@
+import os
+import io
 from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import FileResponse, Response
+from PIL import Image
 from ..models.schemas import UploadResponse
 from ..utils.file_handler import (
     validate_uploaded_file,
     save_uploaded_file,
-    generate_file_id
+    generate_file_id,
+    get_file_path
 )
 from ..utils.compatibility import get_compatible_models
+from ..services.audio_processor import AudioProcessor
 
 router = APIRouter(prefix="/api", tags=["upload"])
 
@@ -25,17 +31,9 @@ async def upload_file(file: UploadFile = File(...)):
 
 @router.get("/files/{file_id}")
 async def get_file(file_id: str, format: str = None):
-    from fastapi.responses import FileResponse, Response
-    from ..utils.file_handler import get_file_path
-    import os
-
     file_path = get_file_path(file_id)
     ext = os.path.splitext(file_path)[1].lower()
     if format == "spectrogram" and ext == ".wav":
-        from ..services.audio_processor import AudioProcessor
-        import io
-        from PIL import Image
-
         audio_processor = AudioProcessor()
         spectrogram = audio_processor.wav_to_spectrogram(file_path)
         img = Image.fromarray(spectrogram.astype('uint8'))
@@ -43,5 +41,4 @@ async def get_file(file_id: str, format: str = None):
         img.save(img_buffer, format='PNG')
         img_buffer.seek(0)
         return Response(content=img_buffer.getvalue(), media_type="image/png")
-
     return FileResponse(file_path)

@@ -11,7 +11,7 @@ from ..audio_processor import AudioProcessor
 class XAIService:
     def __init__(self):
         self.explainers = {
-            "LIME": LIMEExplainer(num_samples=1000),
+            "LIME": LIMEExplainer(num_samples=500),
             "SHAP": SHAPExplainer(),
             "Grad-CAM": GradCAMExplainer()
         }
