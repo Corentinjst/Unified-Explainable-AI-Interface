@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import upload, classify, xai
-from .utils.compatibility import AUDIO_MODELS, IMAGE_MODELS, XAI_METHODS
+from .utils.compatibility import AUDIO_MODELS, IMAGE_MODELS
 from .models.schemas import ModelsResponse, ModelInfo
 from .services.model_loader import ModelLoader
 
@@ -52,10 +52,6 @@ async def get_models():
     audio_models = [ModelInfo(**model) for model in AUDIO_MODELS.values()]
     image_models = [ModelInfo(**model) for model in IMAGE_MODELS.values()]
     return ModelsResponse(audio_models=audio_models, image_models=image_models)
-
-@app.get("/api/xai/methods")
-async def get_xai_methods():
-    return {"methods": list(XAI_METHODS.values())}
 
 @app.get("/api/debug/loaded-models")
 async def debug_loaded_models():
