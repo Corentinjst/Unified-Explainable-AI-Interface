@@ -8,6 +8,9 @@ ENV/
 .venv/
 .env/
 venv_command
+models/
+__pycache__/
+backend/uploads/
 
 # ===========================
 # IDE / Editors
@@ -25,7 +28,7 @@ venv_command
 *.sublime-workspace
 .spyderproject
 .spyproject
-
+j
 
 # ===========================
 # Data Files (large datasets)
